@@ -7,7 +7,18 @@ def show
   end
 
   def index
-    @movies = Movie.all
+    @sort = params[:sort]
+    @selected = :None
+    if (@sort == nil)
+      @movies = Movie.all
+    elsif( @sort == "title")
+      @movies = Movie.sort_by_title
+      @selected = :title
+    elsif (@sort == "release_date")
+      @movies = Movie.sort_by_release_date
+      @selected = :release_date
+    end
+
   end
 
   def new
