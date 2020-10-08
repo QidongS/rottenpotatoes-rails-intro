@@ -7,16 +7,25 @@ def show
   end
 
   def index
-    @sort = params[:sort]
+    @sort = params[:sort] if params[:sort]
     @selected = :None
-    if (@sort == nil)
-      @movies = Movie.all
-    elsif( @sort == "title")
-      @movies = Movie.sort_by_title
-      @selected = :title
-    elsif (@sort == "release_date")
-      @movies = Movie.sort_by_release_date
-      @selected = :release_date
+    @all_ratings = Movie.all_ratings
+    @checked_ratings = @all_ratings 
+    @checked_ratings = params[:ratings].keys if params[:ratings]
+    
+    #p @checked_ratings
+    #p @sort
+    
+    @movies = Movie.with_ratings(@checked_ratings)
+
+    if (!@sort.nil?)
+      if( @sort == "title")
+        @movies = @movies.order("title")
+        @selected = :title
+      elsif (@sort == "release_date")
+        @movies = @movies.order("release_date")
+        @selected = :release_date
+      end
     end
 
   end

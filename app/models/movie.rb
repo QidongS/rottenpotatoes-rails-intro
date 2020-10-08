@@ -1,10 +1,10 @@
 class Movie < ActiveRecord::Base
-    def self.sort_by_title
-        Movie.all.order("title")
+
+    def self.all_ratings
+        Movie.select(:rating).distinct.map(&:rating)
     end
 
-    def self.sort_by_release_date()
-        Movie.all.order("release_date")
-    end 
-
+    def self.with_ratings(ratings)
+        Movie.where(rating: ratings)
+    end
 end
