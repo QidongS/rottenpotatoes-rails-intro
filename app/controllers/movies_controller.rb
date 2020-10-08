@@ -7,18 +7,34 @@ def show
   end
 
   def index
-    @sort = params[:sort] if params[:sort]
     @selected = :None
     @all_ratings = Movie.all_ratings
-    @checked_ratings = @all_ratings 
-    @checked_ratings = params[:ratings].keys if params[:ratings]
-    
-    #p @checked_ratings
-    #p @sort
-    
-    @movies = Movie.with_ratings(@checked_ratings)
 
-    if (!@sort.nil?)
+    if (!params[:ratings] && session[:ratings]) || (!params[:sort] && session[:sort])
+      redirect_to movies_path(ratings: params[:ratings]||session[:ratings], sort: params[:sort]||session[:sort])
+    end 
+
+    if params[:ratings] && params[:ratings].length>0
+      @checked_ratings = params[:ratings]
+      session[:ratings] = @checked_ratings
+    elsif session[:ratings]
+      @checked_ratings = session[:ratings]
+    else 
+      @checked_ratings = @all_ratings
+    end
+
+    @checked_ratings = @checked_ratings.keys if @checked_ratings.class != Array
+    @movies = Movie.with_ratings(@checked_ratings)
+     
+    
+    if params[:sort]
+      @sort = params[:sort] 
+      session[:sort] = @sort
+    elsif session[:sort]
+      @sort = session[:sort]
+    end 
+
+    if !@sort.nil?
       if( @sort == "title")
         @movies = @movies.order("title")
         @selected = :title
